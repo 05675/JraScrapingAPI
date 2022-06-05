@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Api.DAL;
 using Api.Model;
-using Microsoft.Extensions.FileSystemGlobbing;
 
 namespace Api.Controllers
 {
@@ -33,9 +30,11 @@ namespace Api.Controllers
         [HttpGet]
         public IQueryable<HorseInfo> Get(
             [FromQuery] string horseName, [FromQuery]string father, [FromQuery] string mother, [FromQuery]string motherFather,
-            [FromQuery] string trainer, [FromQuery] string horseOwner, [FromQuery] string productionRanch, [FromQuery] string origin, [FromQuery] string horseNameMeaning)
+            [FromQuery] string trainer, [FromQuery] string horseOwner, [FromQuery] string productionRanch, [FromQuery] string origin, 
+            [FromQuery] string horseNameMeaning, [FromQuery] string male, [FromQuery] string wife, [FromQuery] string counterfeit)
         {
-            var horse = _context.HorseInfo
+            // TODO: 性別を1つのFromQueryにする方法は無い？
+                var horse = _context.HorseInfo
                 .Where(x => x.HorseName.Contains(horseName ?? "") 
                         && x.Father.Contains(father ?? "")
                         && x.Mother.Contains(mother ?? "")
@@ -44,7 +43,9 @@ namespace Api.Controllers
                         && x.HorseOwner.Contains(horseOwner ?? "")
                         && x.ProductionRanch.Contains(productionRanch ?? "")
                         && x.Origin.Contains(origin ?? "")
-                        && x.HorseNameMeaning.Contains(horseNameMeaning ?? ""))
+                        && x.HorseNameMeaning.Contains(horseNameMeaning ?? "")
+                        && x.Sex.Contains(male) || x.Sex.Contains(wife) || x.Sex.Contains(counterfeit)
+                        )
                 .OrderBy(x => x.HorseName);
             return horse;
         }
